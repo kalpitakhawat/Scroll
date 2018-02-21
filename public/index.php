@@ -1,5 +1,5 @@
 <?php
-
+ini_set('upload_max_filesize', '100M');
 /**
  * Laravel - A PHP Framework For Web Artisans
  *
