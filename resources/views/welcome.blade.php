@@ -97,7 +97,6 @@
                           <div class="row">
                             <div class="col-12">
                               <button type="submit" name="submit" class="btn btn-outline-primary" v-if="uploaded"> Post </button>
-                              
                             </div>
                           </div>
                         </form>

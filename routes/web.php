@@ -18,9 +18,11 @@ Route::get('/', function () {
 
 Route::get('/register', 'RootController@showRegistrationForm')->middleware('guest')->name('register');
 Route::get('/login', 'RootController@showLoginForm')->middleware('guest')->name('login');
-Route::get('/post/id' , 'PostController@details')->name('postDetails');
+Route::get('/post/{id}' , 'PostController@details')->name('postDetails');
 Route::post('/api/post','PostController@create');
 Route::post('/api/upload','PostController@upload');
 Route::post('/api/getPost','PostController@index');
 Route::post('/api/like','PostController@like');
 Route::post('/api/unlike','PostController@unlike');
+Route::post('/api/getDetails','PostController@getDetails');
+Route::post('/api/addComment','CommentController@create');

@@ -10,13 +10,10 @@
           <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
 
           </ul>
-          <div class=" my-2 my-lg-0">
+          <div class=" my-2 my-lg-0">   
             <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
               <li class="nav-item">
                 <a class="nav-link" href="#">Timeline</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Posts</a>
               </li>
               @if(Auth::check())
               <li class="nav-item dropdown">

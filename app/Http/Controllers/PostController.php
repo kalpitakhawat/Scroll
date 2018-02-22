@@ -116,4 +116,33 @@ class PostController extends Controller
       return Response::json(['message' => $msg], $code);
     }
   }
+  public function details($id)
+  {
+      return view('postDetail');
+  }
+  public function getDetails(Request $r)
+  {
+    try {
+      $post = Post::find($r->pid);
+      $like = Like::where('pid',$post->id)->where('uid',Auth::id())->first();
+      if ($like) {
+        $post->isLiked = true;
+      } else {
+        $post->isLiked = false;
+      }
+      $post->likes = Like::where('pid',$post->id)->count();
+      $post->comments = Comment::where('pid',$post->id)->count();
+      $user = User::find($post->uid);
+      $post->avatar =$user->avatar;
+      $post->user_name = $user->name;
+      $code = 200;
+      $msg = 'success';
+      return Response::json(['message' => $msg ,'post'=>$post], $code);
+    } catch (\Exception $e) {
+      $code = 500;
+      $msg = $e->getMessage();
+      return Response::json(['message' => $msg], $code);
+    }
+
+  }
 }
