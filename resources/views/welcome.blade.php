@@ -151,13 +151,13 @@
 
         <div id='timeline'>
           <div v-for="(post , index) in posts">
-            <div class="row justify-content-center" v-if="post.type == 'text'">
+            <div class="row justify-content-center">
               <div class="col-md-8">
                 <div class="card" style="border:none;">
                   <div class="card-body">
                     <div class="row">
                       <div class="col-2 p-4">
-                        <img :src="post.avatar" class="img-fluid rounded-circle" alt="" v-if="post.avatar != '' || post.avatar != null">
+                        <img :src="post.avatar" class="img-fluid rounded-circle" alt="" v-if="post.avatar != '' && post.avatar != null">
                         <img src="/image/default-user-image.png" class="img-fluid rounded-circle" alt="" v-else>
                       </div>
                       <div class="col-10 align-self-center">
@@ -452,7 +452,7 @@
         data:{
           posts: new Array(),
           offset: 0,
-          limit: 5,
+          limit: 2,
           islast: false,
           loading: false,
           isLogin : false,

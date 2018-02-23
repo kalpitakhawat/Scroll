@@ -26,11 +26,11 @@ class RootController extends Controller
       try {
         $pfile = $r->file('file');
         $fileName = Uuid::generate(1)->string . '.png';
-        //$pfile->move('avatar',$fileName);
+        $pfile->move('avatar',$fileName);
         $filePath = '/avatar/' . $fileName;
-        // $user = User::find(Auth::id());
-        // $user->avatar = $filePath;
-        // $user->update();
+        $user = User::find(Auth::id());
+        $user->avatar = $filePath;
+        $user->update();
         $code = 200;
         $msg = 'success';
         return Response::json(['message' => $msg ], $code);

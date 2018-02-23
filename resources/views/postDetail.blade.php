@@ -15,7 +15,8 @@
                 <div class="card-body">
                   <div class="row">
                     <div class="col-2">
-                      <img src="/image/default-user-image.png" class="img-fluid rounded-circle" alt="">
+                      <img :src="post.avatar" class="img-fluid rounded-circle" alt="" v-if="post.avatar != '' && post.avatar != null">
+                      <img src="/image/default-user-image.png" class="img-fluid rounded-circle" alt="" v-else>
                     </div>
                     <div class="col-10 align-self-center">
                       <h5 class="card-title">@{{post.user_name}}</h5>
@@ -44,8 +45,8 @@
                     </div>
                     <div class="col text-right">
                       @if(Auth::check())
-                        <button class="card-link btn btn-outline-primary btn-sm" v-on:click= "like(post.id , index)" v-if="!post.isLiked"><i data-feather="thumbs-up"></i></button>
-                        <button class="card-link btn btn-primary btn-sm" v-on:click= "unlike(post.id , index)" v-else><i data-feather="thumbs-up" ></i></button>
+                        <button class="card-link btn btn-outline-primary btn-sm" v-on:click= "like(post.id)" v-if="!post.isLiked"><i data-feather="thumbs-up"></i></button>
+                        <button class="card-link btn btn-primary btn-sm" v-on:click= "unlike(post.id)" v-else><i data-feather="thumbs-up" ></i></button>
                       @else
                         <button class="card-link btn btn-outline-primary btn-sm" data-toggle="tooltip" data-placement="top" title="Sign In To Like Post...!" @click = "warn"><i data-feather="thumbs-up"></i></button>
                       @endif
@@ -275,8 +276,10 @@
               }).then(function (response) {
                 console.log(response);
                 post.post.comments += 1;
+                self.comment = "";
               }).catch(function (error) {
                 console.log(error);
+                self.comment = "";
               });
           },
         },

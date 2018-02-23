@@ -10,6 +10,7 @@
         width:1000px !important;
       }
     </style>
+    <link rel="stylesheet" href="/css/toast.css">
   </head>
   <body>
     @include('master/navbar')
@@ -41,7 +42,7 @@
                 <div class="row justify-content-center mt-3">
                   <div class="col-md-4">
                     <div class="form-group">
-                      <button type="button" name="button" class="btn btn-outline-primary" v-if="preview != ''" @click="upload">Upload</button>
+                      <button type="button" name="button" class="btn btn-outline-primary" v-if="preview != ''" @click="upload" :disabled="loading">Upload</button>
                     </div>
                   </div>
                 </div>
@@ -75,6 +76,7 @@
       </div>
     </main>
     @include('master/scripts')
+    <script src="/js/toast.js" charset="utf-8"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.13/vue.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
     <script src="/js/cropper.js"></script>
@@ -154,6 +156,7 @@
         data:{
           preview:'',
           orignalImageFile: null,
+          loading:false,
         },
         mounted(){
 
@@ -177,6 +180,7 @@
           },
           upload:function () {
             var self = this;
+            self.loading = true;
             var formData = new FormData();
             formData.append("file",dataURItoBlob(self.preview));
             axios.post('/api/avatarupload',formData , {
@@ -185,8 +189,16 @@
                 },
             }).then(function (response) {
               console.log(response.data);
+              toastr.success('Your Profile Pic Successfully Uploaded');
+              setTimeout(function () {
+                window.location = "/";
+              },2000);
+
             }).catch(function (error) {
               console.log(error);
+              toastr.error(error);
+              self.loading = true;
+
           });
           }
 

@@ -9,5 +9,5 @@ class Comment extends Model
 {
   use SyncsWithFirebase;
   protected $table = 'comments';
-  protected $fillable = ['id' , 'uid' , 'user_name','pid' , 'comment'];
+  protected $fillable = ['id' , 'uid' , 'pid' , 'comment'];
 }
