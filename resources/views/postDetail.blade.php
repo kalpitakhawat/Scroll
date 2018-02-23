@@ -38,14 +38,51 @@
                   <div class="row mt-3">
                     <div class="col text-left">
                       <small>
-                        <a href="#" class="card-link text-muted">@{{post.likes}} Likes</a>
-                        <a href="#" class="card-link text-muted">@{{post.comments}} Comments</a>
+                        <a class="card-link text-muted" @click = "getLikes" style="cursor: pointer;">@{{post.likes}} Likes</a>
+                        <a class="card-link text-muted">@{{post.comments}} Comments</a>
                       </small>
                     </div>
                     <div class="col text-right">
-                      <button class="card-link btn btn-outline-primary btn-sm" v-on:click= "like(post.id)" v-if="!post.isLiked"><i data-feather="thumbs-up"></i></button>
-                      <button class="card-link btn btn-primary btn-sm" v-on:click= "unlike(post.id)" v-else><i data-feather="thumbs-up" ></i></button>
+                      @if(Auth::check())
+                        <button class="card-link btn btn-outline-primary btn-sm" v-on:click= "like(post.id , index)" v-if="!post.isLiked"><i data-feather="thumbs-up"></i></button>
+                        <button class="card-link btn btn-primary btn-sm" v-on:click= "unlike(post.id , index)" v-else><i data-feather="thumbs-up" ></i></button>
+                      @else
+                        <button class="card-link btn btn-outline-primary btn-sm" data-toggle="tooltip" data-placement="top" title="Sign In To Like Post...!" @click = "warn"><i data-feather="thumbs-up"></i></button>
+                      @endif
                     </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Modal -->
+            <div class="modal fade" id="likeModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Likes</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <ul class="list-group list-group-flush" v-if="likes.length > 0">
+                      <li class="list-group-item" v-for="like in likes">
+                        <div class="row">
+                          <div class="col-2">
+                            <img :src="like.avatar" class="img-fluid rounded-circle" alt="" v-if="like.avatar != '' || like.avatar != null">
+                            <img src="/image/default-user-image.png" class="img-fluid rounded-circle" alt="" v-else>
+                          </div>
+                          <div class="col-10 align-self-center">
+                            <h5 class="card-title">@{{like.user_name}}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">@{{moment(like.created_at ).fromNow()}}</h6>
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                    <p v-else>No Likes For This Post</p>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                   </div>
                 </div>
               </div>
@@ -58,6 +95,7 @@
           </div>
           <div class="row justify-content-center" id="comments">
             <div class="col-md-8">
+              @if(Auth::check())
               <div class="row">
                 <div class="col-md-10">
                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="write your comment here" v-model="comment"></textarea>
@@ -66,6 +104,26 @@
                   <button type="button" class="btn btn-outline-primary" @click="addComment">Done</button>
                 </div>
               </div>
+              @else
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="card text-center">
+                    <div class="card-body">
+                      <div class="row">
+                        <div class="col">
+                          Sign In To Add Your Comment.
+                        </div>
+                      </div>
+                      <div class="row mt-3">
+                        <div class="col">
+                          <a href="/login/" class="btn btn-primary">Sign In</a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              @endif
               <div class="row p-3" v-for="comment in comments">
                 <div class="col-md-10">
                   <small>
@@ -109,6 +167,7 @@
           postId : '',
           post:new Object(),
           comment:'',
+          likes :[],
         },
         mounted(){
           var self = this;
@@ -151,6 +210,22 @@
                 console.log(error);
             });
           },
+          warn:function () {
+            toastr.warning('You Have To Sign In To Like Post');
+          },
+          getLikes:function () {
+            $('#likeModal').modal('hide');
+            var self =this;
+            self.likes = [];
+            axios.post('/api/getLikes', {
+                'pid':self.postId,
+              }).then(function (response) {
+                self.likes = response.data.likes;
+                $('#likeModal').modal('show');
+              }).catch(function (error) {
+                console.log(error);
+            });
+          }
         }
       });
     </script>

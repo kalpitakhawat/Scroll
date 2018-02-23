@@ -28,13 +28,20 @@
                 </div>
                 <div class="row justify-content-center">
                   <div class="col-md-4">
-                    <img :src="preview" alt="" class="img-fluid" id="preview">
+                    <img :src="preview" alt="" class="img-fluid" id="preview" @click ="edit" data-toggle="tooltip" title="Click To Edit">
                   </div>
                 </div>
                 <div class="row justify-content-center mt-3">
                   <div class="col-md-4">
                     <div class="form-group">
-                      <input type="file" class="form-control-file" @change = "processFile">
+                      <input type="file" class="form-control-file" @change = "processFile" id="avatarSelector">
+                    </div>
+                  </div>
+                </div>
+                <div class="row justify-content-center mt-3">
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <button type="button" name="button" class="btn btn-outline-primary" v-if="preview != ''" @click="upload">Upload</button>
                     </div>
                   </div>
                 </div>
@@ -60,7 +67,7 @@
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" @click="modalHidden">Save changes</button>
+                <button type="button" class="btn btn-primary" @click = "getImageData">Save changes</button>
               </div>
             </div>
           </div>
@@ -70,78 +77,121 @@
     @include('master/scripts')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.13/vue.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
-
     <script src="/js/cropper.js"></script>
+    <script>
+      $(document).ready(function(){
+          $('[data-toggle="tooltip"]').tooltip();
+          $('#cropImageModal').on('hidden.bs.modal', function (e) {
+            console.log('closed');
+            if (app.preview == '') {
+
+              document.getElementById('avatarSelector').value = '';
+            }
+          });
+      });
+
+    </script>
+    <script type="text/javascript">
+      var cropBoxData;
+      var canvasData;
+      var cropper;
+      var image;
+      function setImage(src) {
+        var myNode = document.getElementById("prt");
+        while (myNode.firstChild) {
+            myNode.removeChild(myNode.firstChild);
+        }
+        image = new Image();
+        image.src = src;
+        //image.className += 'cropercss';
+        image.id = 'croperImage';
+        document.getElementById('prt').appendChild(image);
+        cropper = new Cropper(image, {
+          autoCropArea: 0.5,
+          aspectRatio: 1,
+          restore: false,
+          minContainerWidth:500,
+          minContainerHeight:500,
+          viewMode:2,
+          ready: function () {
+
+            // Strict mode: set crop box data first
+            cropper.setCropBoxData(cropBoxData).setCanvasData(canvasData);
+          }
+        });
+      }
+      function getCroppedImage() {
+        cropBoxData = cropper.getCropBoxData();
+        canvasData = cropper.getCanvasData();
+        var croppedImage = cropper.getCroppedCanvas().toDataURL('image/png');
+        cropper.destroy();
+
+        return croppedImage;
+      }
+      function dataURItoBlob(dataURI) {
+          // convert base64/URLEncoded data component to raw binary data held in a string
+          var byteString;
+          if (dataURI.split(',')[0].indexOf('base64') >= 0)
+              byteString = atob(dataURI.split(',')[1]);
+          else
+              byteString = unescape(dataURI.split(',')[1]);
+
+          // separate out the mime component
+          var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+
+          // write the bytes of the string to a typed array
+          var ia = new Uint8Array(byteString.length);
+          for (var i = 0; i < byteString.length; i++) {
+              ia[i] = byteString.charCodeAt(i);
+          }
+
+          return new Blob([ia], {type:mimeString});
+      }
+    </script>
     <script type="text/javascript">
       var app = new Vue({
         el:'#app',
         data:{
-          profilepic:'',
-          preview:"",
-          cropBoxData:null,
-          canvasData:null,
-          cropper: null,
-
+          preview:'',
+          orignalImageFile: null,
         },
         mounted(){
-          var self = this;
-          self.cropBoxData=null;
-          self.canvasData=null;
+
         },
         methods:{
           processFile:function (e) {
             var self = this;
-            console.log(e.target.files[0]);
-                self.preview = window.URL.createObjectURL(e.target.files[0]);
-                var image = new Image();
-                image.src = window.URL.createObjectURL(e.target.files[0]);
-                image.className +='cropercss';
-                image.id = 'croperImage';
-                document.getElementById('prt').appendChild(image);
-                // self.modalShown(image);
-                $('#cropImageModal').modal('show');
-                $('#cropImageModal').on('shown.bs.modal', self.modalShown(image));
-                $('#cropImageModal').on('hidden.bs.modal', self.modalHidden());
+            self.orignalImageFile = e.target.files[0];
+            setImage(URL.createObjectURL(e.target.files[0]));
+            $('#cropImageModal').modal('show');
           },
-          modalShown:function (image) {
+          getImageData:function () {
             var self = this;
-
-            var cropper
-            cropper = new Cropper(image, {
-              autoCropArea: 0.5,
-              aspectRatio: 1,
-              minContainerWidth: 500,
-              minContainerHeight:500,
-              viewMode: 2,
-              ready: function () {
-                // Strict mode: set crop box data first
-                var cropBoxData;
-                var canvasData;
-                cropper.setCropBoxData(cropBoxData).setCanvasData(canvasData);
-                
-              }
-            });
-
-            //console.log(self.cropper.setCropBoxData());
+            self.preview = getCroppedImage();
+            $('#cropImageModal').modal('hide');
           },
-          modalHidden:function () {
+          edit:function () {
             var self = this;
-            self.cropBoxData = self.cropper.getCropBoxData();
-            self.canvasData = self.cropper.getCanvasData();
-            //console.log(self.canvasData);
-            self.cropper.destroy();
-            self.cropper = new Object();
+            setImage(window.URL.createObjectURL(self.orignalImageFile));
+            $('#cropImageModal').modal('show');
+          },
+          upload:function () {
+            var self = this;
+            var formData = new FormData();
+            formData.append("file",dataURItoBlob(self.preview));
+            axios.post('/api/avatarupload',formData , {
+                headers: {
+                  'Content-Type': 'multipart/form-data'
+                },
+            }).then(function (response) {
+              console.log(response.data);
+            }).catch(function (error) {
+              console.log(error);
+          });
           }
-        },
-        watch:{
-          profilepic:function () {
-            console.log('hello');
-          }
-        },
+
+        }
       });
-    </script>
-    <script type="text/javascript">
-
     </script>
   </body>
 </html>

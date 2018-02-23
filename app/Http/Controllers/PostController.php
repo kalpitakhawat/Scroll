@@ -137,7 +137,26 @@ class PostController extends Controller
       $post->user_name = $user->name;
       $code = 200;
       $msg = 'success';
-      return Response::json(['message' => $msg ,'post'=>$post], $code);
+      return Response::json(['message' => $msg ,'post'=>$post , 'isLogin' => Auth::check()], $code);
+    } catch (\Exception $e) {
+      $code = 500;
+      $msg = $e->getMessage();
+      return Response::json(['message' => $msg], $code);
+    }
+
+  }
+  public function getLikes(Request $r)
+  {
+    try {
+      $likes = Like::where('pid',$r->pid)->get();
+      foreach ($likes as $like) {
+        $user = User::find($like->uid);
+        $like->user_name = $user->name;
+        $like->avatar = $user->avatar;
+      }
+      $code = 200;
+      $msg = 'success';
+      return Response::json(['message' => $msg ,'likes'=>$likes ], $code);
     } catch (\Exception $e) {
       $code = 500;
       $msg = $e->getMessage();
