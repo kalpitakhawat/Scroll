@@ -11,14 +11,18 @@
 
           </ul>
           <div class=" my-2 my-lg-0">
-            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0 ">
               <li class="nav-item">
                 <a class="nav-link active" href="/">Timeline</a>
               </li>
               @if(Auth::check())
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <i data-feather="user"></i>
+                  @if(Auth::user()->avatar)
+                  <img src="{{Auth::user()->avatar}}" class="img-fluid rounded-circle" alt="" width="30px">
+                  @else
+                  <img src="/image/default-user-image.png" class="img-fluid rounded-circle" alt="" width="30px">
+                  @endif
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                   <a class="dropdown-item" href="/profile">Change Profile Pic</a>

@@ -13,7 +13,6 @@ class CommentController extends Controller
       try {
         $c = new Comment();
         $c->uid = Auth::id();
-        $c->user_name = Auth::user()->name;
         $c->pid = $r->pid;
         $c->comment = $r->comment;
         $c->save();

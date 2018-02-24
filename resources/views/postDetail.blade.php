@@ -130,7 +130,7 @@
                   <small>
                     <div class="card" style="border:none;">
                         <div class="card-body">
-                          <h6 class="card-title">@{{comment.user_name}}</h6>
+                          <h6 class="card-title">@{{users[comment.uid].name}}</h6>
                           <p class="card-subtitle mb-2 text-muted">@{{moment(comment.created_at ).fromNow()}}</p>
                           <p class="card-text">@{{comment.comment}}</p>
                         </div>
@@ -236,6 +236,7 @@
         data:{
           postId:'',
           comment:'',
+          users:new Array(),
           comments:new Array(),
         },
         mounted(){
@@ -249,6 +250,11 @@
             var self = this;
             var db = firebase.database();
             var commentRef = db.ref('comments');
+            var userRef = db.ref('users');
+            userRef.on('value',function (snapshot) {
+              self.users = [];
+              self.users = snapshot.val();
+            });
             commentRef.orderByChild('pid').equalTo(self.postId).on('value', function(snapshot) {
               self.comments = [];
               snapshot.forEach(function(childSnapshot) {
@@ -261,6 +267,7 @@
               self.commentSort();
 
             });
+
           },
           commentSort:function () {
             var self = this;

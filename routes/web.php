@@ -14,10 +14,10 @@ Auth::routes();
 Route::get('/', function () {
     return view('welcome');
 });
-
-Route::get('/test', function () {
+Route::get('/test2', function () {
     return view('test');
 });
+Route::get('/test', 'TestController@test');
 Route::middleware(['auth'])->group(function ()
 {
   Route::get('/profile' , 'RootController@profilepic')->name('profilePicUpload');

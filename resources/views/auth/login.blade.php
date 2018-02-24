@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
@@ -13,24 +13,31 @@
           <div class="col-md-10">
             <div class="card">
               <div class="card-header">
-                Register
+                Login
               </div>
               <div class="card-body">
-                <form action="{{route('login')}}" method="post">
+                <form action="{{route('login')}}" method="post" class="needs-validation" novalidate>
                   <div class="row">
                     <div class="col-md-8">
                       @csrf
+                        @if ($errors->has('email'))
+                      <div class="form-group row text-center">
+                        <div class="col-12">
+                          <div class="alert alert-danger" role="alert">
+                            {{ $errors->first('email') }}
+                          </div>
+                        </div>
+                      </div>
+                        @endif
                       <div class="form-group row">
                           <label for="email" class="col-sm-4 col-form-label text-md-right">E-Mail Address</label>
 
                           <div class="col-md-6">
-                              <input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" required autofocus>
+                              <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}" required autofocus>
+                              <div class="invalid-feedback">
+                                Please Provide A Valid Email Id
+                              </div>
 
-                              @if ($errors->has('email'))
-                                  <span class="invalid-feedback">
-                                      <strong>{{ $errors->first('email') }}</strong>
-                                  </span>
-                              @endif
                           </div>
                       </div>
 
@@ -39,22 +46,14 @@
 
                           <div class="col-md-6">
                               <input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" required>
-
+                              <div class="invalid-feedback">
+                                Enter Password
+                              </div>
                               @if ($errors->has('password'))
                                   <span class="invalid-feedback">
                                       <strong>{{ $errors->first('password') }}</strong>
                                   </span>
                               @endif
-                          </div>
-                      </div>
-
-                      <div class="form-group row">
-                          <div class="col-md-6 offset-md-4">
-                              <div class="checkbox">
-                                  <label>
-                                      <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}> Remember Me
-                                  </label>
-                              </div>
                           </div>
                       </div>
 
@@ -79,6 +78,25 @@
       </div>
     </main>
     @include('master/scripts')
-
+    <script>
+      // Example starter JavaScript for disabling form submissions if there are invalid fields
+      (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+          // Fetch all the forms we want to apply custom Bootstrap validation styles to
+          var forms = document.getElementsByClassName('needs-validation');
+          // Loop over them and prevent submission
+          var validation = Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', function(event) {
+              if (form.checkValidity() === false) {
+                event.preventDefault();
+                event.stopPropagation();
+              }
+              form.classList.add('was-validated');
+            }, false);
+          });
+        }, false);
+      })();
+    </script>
   </body>
 </html>
